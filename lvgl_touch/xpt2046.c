@@ -12,6 +12,9 @@
 #include "driver/gpio.h"
 #include "tp_spi.h"
 #include <stddef.h>
+#include "context.h"
+
+extern Context_t context;
 
 /*********************
  *      DEFINES
@@ -180,9 +183,14 @@ static void xpt2046_corr(int16_t * x, int16_t * y)
     (*y) = (uint32_t)((uint32_t)(*y) * LV_VER_RES) /
            (XPT2046_Y_MAX - XPT2046_Y_MIN);
 
-#if XPT2046_X_INV != 0
     (*x) =  LV_HOR_RES - (*x);
-#endif
+
+    if (context.flip_touch_coordinates) {
+        (*x) =  LV_HOR_RES - (*x);
+    }
+//#if XPT2046_X_INV != 0
+//    (*x) =  LV_HOR_RES - (*x);
+//#endif
 
 #if XPT2046_Y_INV != 0
     (*y) =  LV_VER_RES - (*y);
